@@ -2,6 +2,7 @@ import * as Redis from "ioredis";
 import { v4 } from "uuid";
 import { CeleryBroker } from ".";
 import { Message } from "../message";
+import {ICeleryStatus} from "./amqp";
 
 
 class RedisMessage extends Message {
@@ -208,5 +209,16 @@ export default class RedisBroker implements CeleryBroker {
 
       return new RedisMessage(rawMsg);
     });
+  }
+
+  addEventListener(event: string, listener: any): void {
+  }
+
+  connect(): Promise<any> {
+    return Promise.resolve(undefined);
+  }
+
+  status(): ICeleryStatus {
+    return;
   }
 }

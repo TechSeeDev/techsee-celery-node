@@ -2,6 +2,7 @@ import * as amqplib from "amqplib";
 import { CeleryBroker } from ".";
 import { Message } from "../message";
 
+
 class AMQPMessage extends Message {
   constructor(payload: amqplib.ConsumeMessage) {
     super(
@@ -14,8 +15,15 @@ class AMQPMessage extends Message {
   }
 }
 
+export enum ICeleryStatus {
+    DISCONNECTED = 'disconnected',
+    CONNECTED = 'connected',
+    CLOSED = 'closed'
+}
+
 export default class AMQPBroker implements CeleryBroker {
-  connect: Promise<amqplib.Connection>;
+  state: ICeleryStatus = ICeleryStatus.CLOSED;
+  connection: amqplib.Connection;
   channel: Promise<amqplib.Channel>;
   queue: string;
 
@@ -26,10 +34,32 @@ export default class AMQPBroker implements CeleryBroker {
    * @param {object} opts the options object for amqp connect of amqplib
    * @param {string} queue optional. the queue to connect to.
    */
-  constructor(url: string, opts: object, queue = "celery") {
+  constructor(private url: string, private opts: object, queue: string = "celery") {
     this.queue = queue;
-    this.connect = amqplib.connect(url, opts);
-    this.channel = this.connect.then(conn => conn.createChannel());
+  }
+
+  public addEventListener (event: string,listener: any) {
+      this.connection.on(event,listener);
+  }
+
+  public connect() {
+      return new Promise(async (resolve,reject)=>{
+          try {
+              this.connection = await amqplib.connect(this.url, this.opts); // Await the connection
+              this.connection.on('close',()=> {
+                  if(this.state !== ICeleryStatus.CLOSED) {
+                      this.state = ICeleryStatus.DISCONNECTED
+                  }
+              });
+              this.channel = this.connection.createChannel(); // Create the channel
+              this.state = ICeleryStatus.CONNECTED;
+              return resolve();
+          } catch (err) {
+              this.state = ICeleryStatus.DISCONNECTED;
+              reject('Failed to connect AMQPBroker:');
+          }
+      })
+
   }
 
   /**
@@ -56,17 +86,22 @@ export default class AMQPBroker implements CeleryBroker {
           })
         ])
         .then(() => resolve())
-        .catch(reject);
+        .catch(()=>reject());
       });
     });
   }
+
+    public status(): ICeleryStatus {
+        return this.state;
+    }
 
   /**
    * @method AMQPBroker#disconnect
    * @returns {Promise} promises that continues if amqp disconnected.
    */
   public disconnect(): Promise<void> {
-    return this.connect.then(conn => conn.close());
+      this.state = ICeleryStatus.CLOSED;
+      return this.connection.close();
   }
 
   /**

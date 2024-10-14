@@ -1,6 +1,7 @@
 import * as url from "url";
 import RedisBroker from "./redis";
-import AMQPBroker from "./amqp";
+import AMQPBroker, {ICeleryStatus} from "./amqp";
+
 
 export interface CeleryBroker {
   isReady: () => Promise<any>;
@@ -13,6 +14,9 @@ export interface CeleryBroker {
     properties: object
   ) => Promise<any>;
   subscribe: (queue: string, callback: Function) => Promise<any>;
+  status: () => ICeleryStatus
+  addEventListener: (event: string, listener: any) => void;
+  connect: () => Promise<any>;
 }
 
 /**

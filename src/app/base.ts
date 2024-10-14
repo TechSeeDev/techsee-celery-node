@@ -2,9 +2,10 @@
  * writes here Base Parent class of Celery client and worker
  * @author SunMyeong Lee <actumn814@gmail.com>
  */
-import { CeleryConf, defaultConf } from "./conf";
-import { newCeleryBroker, CeleryBroker } from "../kombu/brokers";
-import { newCeleryBackend, CeleryBackend } from "../backends";
+import {CeleryConf, defaultConf} from "./conf";
+import {CeleryBroker, newCeleryBroker} from "../kombu/brokers";
+import {CeleryBackend, newCeleryBackend} from "../backends";
+import {ICeleryStatus} from "../kombu/brokers/amqp";
 
 export default class Base {
   private _backend: CeleryBackend;
@@ -64,5 +65,19 @@ export default class Base {
    */
   public disconnect(): Promise<any> {
     return this.broker.disconnect().then(() => this.backend.disconnect());
+  }
+
+  public status(): ICeleryStatus {
+    return this._broker ? this._broker.status() : ICeleryStatus.CLOSED;
+  }
+
+  public addEventListener(event: string,listener: any): void {
+      this._broker.addEventListener(event,listener);
+  }
+
+  public async connect() {
+    this.broker;
+    this.backend;
+    await this._broker.connect();
   }
 }

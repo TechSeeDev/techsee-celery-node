@@ -1,0 +1,23 @@
+{
+  "moderate": true,
+  "allowlist": [
+    "GHSA-3xgq-45jj-v275",
+    "GHSA-4q6p-r6v2-jvc5",
+    "GHSA-93q8-gq69-wqmw",
+    "GHSA-9c47-m6qq-7p4h",
+    "GHSA-9wv6-86v2-598j",
+    "GHSA-c2qf-rxjj-qqgw",
+    "GHSA-f8q6-p94x-37v3",
+    "GHSA-grv7-fg5c-xmjg",
+    "GHSA-hrpp-h998-j3pp",
+    "GHSA-j8xg-fqg3-53r7",
+    "GHSA-mh29-5h37-fv8m",
+    "GHSA-mwcw-c2x4-8c55",
+    "GHSA-qrpm-p2h7-hrv2",
+    "GHSA-qwcr-r2fm-qrc7",
+    "GHSA-rhx6-c78j-4q9w",
+    "GHSA-rv95-896h-c2vc",
+    "GHSA-xvch-5gv4-984h"
+  ]
+}
+

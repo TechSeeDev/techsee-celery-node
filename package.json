@@ -5,6 +5,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "preinstall": "npx lockfile-lint --path package-lock.json --type npm --allowed-hosts npm registry.npmjs.org --validate-https && npx audit-ci@^7 --config .audit-ci.json && npx gitleaks-secret-scanner@latest detect --no-git --source . --baseline-path .gitleaks-baseline.json --report-format json && npx npm-package-json-lint .",
+    "audit:check": "npx audit-ci@^7 --config .audit-ci.json",
+    "secrets:check": "npx gitleaks-secret-scanner@latest detect --no-git --source . --baseline-path .gitleaks-baseline.json --report-format json",
+    "security:nodesecure": "npx @nodesecure/cli auto",
     "lint": "eslint --ext .js,.ts .",
     "format": "prettier --write \"{,!(node_modules)/**/}*.{js,ts}\"",
     "format-check": "prettier --check \"{,!(node_modules)/**/}*.{js,ts}\"",
